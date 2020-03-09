@@ -106,7 +106,7 @@
       function listMajors() {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1YKnd95H4Y1dmVt0ggB31WnUWmFT4a34xYPPQW-74Ddc',
-          range: 'job_management!A2:E',
+          range: 'job_management!A2:G',
         }).then(function(response) {
           var range = response.result;
           if (range.values.length > 0) {
