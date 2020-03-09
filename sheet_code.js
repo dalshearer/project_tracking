@@ -81,9 +81,9 @@ function handleSignoutClick(event) {
 function appendTableRow(message) {
     var table = document.getElementById('content');
     var table_row = document.createElement("tr");
-    for (i = 0; i < message.values.length; i++) {
+    for (index in message) {
       var table_data = document.createElement("td");
-      var cell_value = document.createTextNode(message.values[i]);
+      var cell_value = document.createTextNode(message[index]);
       table_data.appendChild(cell_value);
       table_row.appendChild(table_data);
     }
