@@ -11,7 +11,8 @@
     <button id="authorize_button" style="display: none;">Authorize</button>
     <button id="signout_button" style="display: none;">Sign Out</button>
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
+    <table id="content" style="width:100%"></table>
+    <pre id="message" style="white-space: pre-wrap;"></pre>
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
@@ -54,7 +55,7 @@
           authorizeButton.onclick = handleAuthClick;
           signoutButton.onclick = handleSignoutClick;
         }, function(error) {
-          appendPre(JSON.stringify(error, null, 2));
+          appendMessage(JSON.stringify(error, null, 2));
         });
       }
 
@@ -93,8 +94,22 @@
        *
        * @param {string} message Text to be placed in pre element.
        */
-      function appendPre(message) {
-        var pre = document.getElementById('content');
+      function appendTableRow(message) {
+        var table = document.getElementById('content');
+        var table_row = document.createElement("tr");
+        for (i = 0; i < message.values.length; i++) {
+          var table_data = document.createElement("td");
+          var cell_value = document.createTextNode(message.values[i]);
+          table_data.appendChild(cell_value);
+          table_row.appendChild(table_data);
+        
+        }
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+      function appendMessage(message) {
+        var pre = document.getElementById('message');
         var textContent = document.createTextNode(message + '\n');
         pre.appendChild(textContent);
       }
@@ -113,13 +128,13 @@
             for (i = 0; i < range.values.length; i++) {
               var row = range.values[i];
               // Print columns A and E, which correspond to indices 0 and 4.
-              appendPre(row.join());
+              appendTableRow(row);
             }
           } else {
-            appendPre('No data found.');
+            appendMessage('No data found.');
           }
         }, function(response) {
-          appendPre('Error: ' + response.result.error.message);
+          appendMessage('Error: ' + response.result.error.message);
         });
       }
 
