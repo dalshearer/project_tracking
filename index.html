@@ -106,11 +106,10 @@
       function listMajors() {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1YKnd95H4Y1dmVt0ggB31WnUWmFT4a34xYPPQW-74Ddc',
-          range: 'job_management!A2:G',
+          range: 'job_management!A1:G',
         }).then(function(response) {
           var range = response.result;
           if (range.values.length > 0) {
-            appendPre('Name, Major:');
             for (i = 0; i < range.values.length; i++) {
               var row = range.values[i];
               // Print columns A and E, which correspond to indices 0 and 4.
