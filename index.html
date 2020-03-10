@@ -1,26 +1,40 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Google Sheets API Quickstart</title>
-    <meta charset="utf-8" />
-  </head>
-  <body>
-    <p>Google Sheets API Quickstart</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login/Logout</title>
+    <script type="text/javascript" src="source/globals.js"></script>
+    <link rel="stylesheet" type="text/css" href="source/styles.css">
 
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" style="display: none;">Authorize</button>
-    <button id="signout_button" style="display: none;">Sign Out</button>
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <button id="authorize_button" style="display: none;">Authorize</button>
+                    <button id="signout_button" style="display: block;">Sign Out</button>
+                </td>
+                <td>
+                    <button id="view_jobs" style="display: none;">View Jobs</button>
+                </td>
+                <td>
+                    <button id="add_jobs" style="display: none;">Add Jobs</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="content">
 
-    <table id="content" style="width:100%"></table>
-    <pre id="message" style="white-space: pre-wrap;"></pre>
+    </div>
+    <div id="message">
 
-    <script type="text/javascript" src="sheet_code.js">
+    </div>
 
-    </script>
-
+    <script type="text/javascript" src="source/code.js"></script>
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};handleClientLoad()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()">
     </script>
-  </body>
+</body>
 </html>
