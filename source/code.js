@@ -137,20 +137,21 @@ function clearChildren() {
     content_div.textContent = '';
 }
 
+function get_add_job_form() {
+    return new Promise(resolve => {
+        fetch('contents/add_job.html')
+        .then(data => data.text())
+        .then(html => content_div.innerHTML = html);
+    });
+}
+
 function addJobsForm() {
-//    form = document.createElement('form');
-//
-//    label = document.createElement('label');
-//    label.innerHTML = 'Job Number:';
-//    form.appendChild(label)
-//
-//    clearChildren();
-//    content_div.appendChild(form);
     fetch('contents/add_job.html')
     .then(data => data.text())
     .then(html => content_div.innerHTML = html);
-}
+//        const result = await get_add_job_form()
 
+}
 
 /**
 * Print the names and majors of students in a sample spreadsheet:
@@ -158,8 +159,8 @@ function addJobsForm() {
 */
 function listProjects() {
     gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: '1YKnd95H4Y1dmVt0ggB31WnUWmFT4a34xYPPQW-74Ddc',
-      range: 'job_management!A1:G',
+      spreadsheetId: window.spreadsheet_id,
+      range: window.job_range,
     }).then(function(response) {
       var range = response.result;
       if (range.values.length > 0) {
@@ -171,4 +172,34 @@ function listProjects() {
     }, function(response) {
       appendMessage('Error: ' + response.result.error.message);
     });
+}
+
+function insertJobRow(){
+    job_number = document.getElementById('job_number');
+    project_name = document.getElementById('project_name');
+    r2_project_manager = document.getElementById('r2_pm');
+    r2_surveyor = document.getElementById('r2_pls');
+    client_pm = document.getElementById('client_pm');
+    job_notes = document.getElementById('job_notes');
+    deliverable = document.getElementById('job_deliverable');
+
+    let values = [job_number.value, project_name.value, r2_project_manager.value, r2_surveyor.value, client_pm.value,
+    job_notes.value, deliverable.value];
+    let job_data = {values, };
+    console.log(job_data);
+
+    gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId: window.spreadsheet_id,
+      range: 'job_management',
+      valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
+      resource: {values: job_data,
+      }},
+        (err, result) => {if (err) {
+            console.log(err);
+        } else {
+            appendMessage(`${result.updates.updatedCells} cells appended.`);
+        }}
+
+    );
 }

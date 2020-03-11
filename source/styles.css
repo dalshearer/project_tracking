@@ -1,6 +1,10 @@
 .report_table {
-  border-collapse: collapse;
-  border: 1px solid black;
-  margin-top: 50px;
-  padding: 3px;
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin-top: 50px;
+    padding: 3px;
+}
+.form_table{
+    margin-top: 50px;
+    padding: 3px;
 }
