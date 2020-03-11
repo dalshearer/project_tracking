@@ -1,3 +1,4 @@
+
 var authorizeButton = document.getElementById('authorize_button');
 var signoutButton = document.getElementById('signout_button');
 var viewJobsButton = document.getElementById('view_jobs');
@@ -75,6 +76,7 @@ function setInactive(){
 */
 function handleAuthClick(event) {
     gapi.auth2.getAuthInstance().signIn();
+
 }
 
 /**
@@ -84,6 +86,7 @@ function handleSignoutClick(event) {
     clearChildren();
     setInactive();
     gapi.auth2.getAuthInstance().signOut();
+
 }
 
 function handleAddJobsClick(event){
@@ -91,7 +94,7 @@ function handleAddJobsClick(event){
 }
 
 function handleViewJobsClick(event){
-    listProjects();
+    listProjects(window.job_management_range);
 }
 
 /**
@@ -157,13 +160,14 @@ function addJobsForm() {
 * Print the names and majors of students in a sample spreadsheet:
 * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
 */
-function listProjects() {
+function listProjects(my_range) {
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: window.spreadsheet_id,
-      range: window.job_range,
+      range: my_range,
     }).then(function(response) {
       var range = response.result;
       if (range.values.length > 0) {
+        console.log(response);
         add_table_data(range);
 
       } else {
@@ -174,7 +178,7 @@ function listProjects() {
     });
 }
 
-function insertJobRow(){
+function insertJobRow() {
     job_number = document.getElementById('job_number');
     project_name = document.getElementById('project_name');
     r2_project_manager = document.getElementById('r2_pm');
@@ -183,23 +187,23 @@ function insertJobRow(){
     job_notes = document.getElementById('job_notes');
     deliverable = document.getElementById('job_deliverable');
 
-    let values = [job_number.value, project_name.value, r2_project_manager.value, r2_surveyor.value, client_pm.value,
+    values = [job_number.value, project_name.value, r2_project_manager.value, r2_surveyor.value, client_pm.value,
     job_notes.value, deliverable.value];
-    let job_data = {values, };
-    console.log(job_data);
 
-    gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId: window.spreadsheet_id,
-      range: 'job_management',
-      valueInputOption: 'RAW',
-      insertDataOption: 'INSERT_ROWS',
-      resource: {values: job_data,
-      }},
-        (err, result) => {if (err) {
-            console.log(err);
-        } else {
-            appendMessage(`${result.updates.updatedCells} cells appended.`);
-        }}
+    insertRow(window.job_management_range, values);
+}
 
-    );
+function insertRow(my_range, values){
+    var resource = {values: [values]};
+
+    request = {spreadsheetId: window.spreadsheet_id, range: my_range,
+    valueInputOption: "USER_ENTERED", insertDataOption: "INSERT_ROWS", resource: resource}
+
+    gapi.client.sheets.spreadsheets.values.append(request).then(function(response) {
+      console.log(response);
+      listProjects(my_range);
+    }, function(response) {
+      appendMessage('Error: ' + response.result.error.message);
+    });
+
 }
