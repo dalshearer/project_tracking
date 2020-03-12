@@ -1,10 +1,14 @@
-
-var authorizeButton = document.getElementById('authorize_button');
-var signoutButton = document.getElementById('signout_button');
-var viewJobsButton = document.getElementById('view_jobs');
-var addJobsButton = document.getElementById('add_jobs');
 var message_div = document.getElementById('message');
 var content_div = document.getElementById('content');
+var authorizeButton = document.getElementById('authorize_button');
+var signoutButton = document.getElementById('signout_button');
+var viewJobsManagementButton = document.getElementById('view_jobs_management');
+var addJobsManagementButton = document.getElementById('add_jobs_management');
+var viewJobDataButton = document.getElementById('view_job_data');
+var addJobDataButton = document.getElementById('add_job_data');
+var viewDeliverableButton = document.getElementById('view_deliverable');
+var addDeliverableButton = document.getElementById('add_deliverable');
+
 
 /**
 *  On load, called to load the auth2 library and API client library.
@@ -31,8 +35,12 @@ function initClient() {
       updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
       authorizeButton.onclick = handleAuthClick;
       signoutButton.onclick = handleSignoutClick;
-      viewJobsButton.onclick = handleViewJobsClick;
-      addJobsButton.onclick = handleAddJobsClick;
+      viewJobsManagementButton.onclick = handleViewJobsManagementClick;
+      addJobsManagementButton.onclick = handleAddJobsManagementClick;
+      viewJobDataButton.onclick = handleViewJobsDataClick;
+      addJobDataButton.onclick = handleAddJobsDataClick;
+      viewDeliverableButton.onclick = handleViewDeliverableClick;
+      addDeliverableButton.onclick = handleAddDeliverableClick;
 
     }, function(error) {
       appendMessage(JSON.stringify(error, null, 2));
@@ -60,15 +68,24 @@ function updateSigninStatus(isSignedIn) {
 function setActive(){
     authorizeButton.style.display = 'none';
     signoutButton.style.display = 'block';
-    viewJobsButton.style.display = 'block';
-    addJobsButton.style.display = 'block';
+    viewJobsManagementButton.style.display = 'block';
+    addJobsManagementButton.style.display = 'block';
+    viewJobDataButton.style.display = 'block';
+    addJobDataButton.style.display = 'block';
+    viewDeliverableButton.style.display = 'block';
+    addDeliverableButton.style.display = 'block';
+
 }
 
 function setInactive(){
     authorizeButton.style.display = 'block';
     signoutButton.style.display = 'none';
-    viewJobsButton.style.display = 'none';
-    addJobsButton.style.display = 'none';
+    viewJobsManagementButton.style.display = 'none';
+    addJobsManagementButton.style.display = 'none';
+    viewJobDataButton.style.display = 'none';
+    addJobDataButton.style.display = 'none';
+    viewDeliverableButton.style.display = 'none';
+    addDeliverableButton.style.display = 'none';
 }
 
 /**
@@ -89,12 +106,28 @@ function handleSignoutClick(event) {
 
 }
 
-function handleAddJobsClick(event){
-    addJobsForm();
+function handleViewJobsDataClick(event){
+    listProjects(window.job_data_range);
 }
 
-function handleViewJobsClick(event){
+function handleAddJobsDataClick(event){
+    addJobsDataForm();
+}
+
+function handleAddJobsManagementClick(event){
+    addJobsManagementForm();
+}
+
+function handleViewJobsManagementClick(event){
     listProjects(window.job_management_range);
+}
+
+function handleViewDeliverableClick(event){
+    listProjects(window.deliverable_range);
+}
+
+function handleAddDeliverableClick(event){
+    addDeliverableForm();
 }
 
 /**
@@ -140,19 +173,23 @@ function clearChildren() {
     content_div.textContent = '';
 }
 
-function get_add_job_form() {
-    return new Promise(resolve => {
-        fetch('contents/add_job.html')
-        .then(data => data.text())
-        .then(html => content_div.innerHTML = html);
-    });
-}
-
-function addJobsForm() {
-    fetch('contents/add_job.html')
+function addDeliverableForm(){
+    fetch('contents/add_deliverable.html')
     .then(data => data.text())
     .then(html => content_div.innerHTML = html);
-//        const result = await get_add_job_form()
+}
+
+function addJobsManagementForm() {
+    fetch('contents/add_job_management.html')
+    .then(data => data.text())
+    .then(html => content_div.innerHTML = html);
+
+}
+
+function addJobsDataForm() {
+    fetch('contents/add_job_data.html')
+    .then(data => data.text())
+    .then(html => content_div.innerHTML = html);
 
 }
 
@@ -178,7 +215,53 @@ function listProjects(my_range) {
     });
 }
 
-function insertJobRow() {
+function insertDeliverableRow() {
+    deliverable_id = document.getElementById('deliverable_id')
+    deliverable = document.getElementById('deliverable');
+    tract_no = document.getElementById('tract_no');
+
+    values = [deliverable_id.value, deliverable.value, tract_no.value]
+    insertRow(window.deliverable_range, values);
+}
+
+function insertJobDataRow() {
+    requestor = document.getElementById('requestor');
+    request_date = document.getElementById('request_date');
+    client = document.getElementById('client');
+    ordered_by = document.getElementById('ordered_by');
+    client_pm = document.getElementById('client_pm');
+    r2_pm = document.getElementById('r2_pm');
+    r2_pls = document.getElementById('r2_pls');
+    afe_number = document.getElementById('afe_number');
+    po_number = document.getElementById('po_number');
+    project_name = document.getElementById('project_name');
+    project_type = document.getElementById('project_type');
+    country = document.getElementById('country');
+    state = document.getElementById('state');
+    county = document.getElementById('county');
+    section = document.getElementById('section');
+    township = document.getElementById('township');
+    range = document.getElementById('range');
+    tx_abstract = document.getElementById('tx_abstract');
+    tx_section = document.getElementById('tx_section')
+    tx_block = document.getElementById('tx_block');
+    tx_township = document.getElementById('tx_township');
+    tx_survey = document.getElementById('tx_survey');
+    existing_job = document.getElementById('existing_job');
+    existing_job_number = document.getElementById('existing_job_number');
+    job_number = document.getElementById('job_number');
+    job_notes = document.getElementById('job_notes');
+
+    values = [requestor.value, request_date.value, client.value, ordered_by.value, client_pm.value, r2_pm.value,
+    r2_pls.value, afe_number.value, po_number.value, project_name.value, project_type.value, country.value,
+    state.value, county.value, section.value, township.value, range.value, tx_abstract.value, tx_section.value,
+    tx_block.value, tx_township.value, tx_survey.value, existing_job.value, existing_job_number.value, job_number.value,
+    job_notes.value];
+
+    insertRow(window.job_data_range, values);
+}
+
+function insertJobManagementRow() {
     job_number = document.getElementById('job_number');
     project_name = document.getElementById('project_name');
     r2_project_manager = document.getElementById('r2_pm');

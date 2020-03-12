@@ -10,4 +10,5 @@ window.discovery_docs = ["https://sheets.googleapis.com/$discovery/rest?version=
 window.scopes = "https://www.googleapis.com/auth/spreadsheets";
 window.spreadsheet_id = '1YKnd95H4Y1dmVt0ggB31WnUWmFT4a34xYPPQW-74Ddc';
 window.job_management_range = 'job_management!A1:G';
-
+window.job_data_range = 'job_data!A1:Z';
+window.deliverable_range = 'deliverables!A1:C';
