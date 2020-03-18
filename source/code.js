@@ -8,6 +8,8 @@ var viewJobDataButton = document.getElementById('view_job_data');
 var addJobDataButton = document.getElementById('add_job_data');
 var viewDeliverableButton = document.getElementById('view_deliverable');
 var addDeliverableButton = document.getElementById('add_deliverable');
+var viewR2EmployeesButton = document.getElementById('view_r2_employees');
+var addR2EmployeesButton = document.getElementById('add_r2_employees');
 
 
 /**
@@ -41,6 +43,9 @@ function initClient() {
       addJobDataButton.onclick = handleAddJobsDataClick;
       viewDeliverableButton.onclick = handleViewDeliverableClick;
       addDeliverableButton.onclick = handleAddDeliverableClick;
+      viewR2EmployeesButton.onclick = handleViewR2EmployeesClick;
+      addR2EmployeesButton.onclick = handleAddR2EmployeesClick;
+      getJobNumbers();
 
     }, function(error) {
       appendMessage(JSON.stringify(error, null, 2));
@@ -74,6 +79,8 @@ function setActive(){
     addJobDataButton.style.display = 'block';
     viewDeliverableButton.style.display = 'block';
     addDeliverableButton.style.display = 'block';
+    viewR2EmployeesButton.style.display = 'block';
+    addR2EmployeesButton.style.display = 'block';
 
 }
 
@@ -86,6 +93,8 @@ function setInactive(){
     addJobDataButton.style.display = 'none';
     viewDeliverableButton.style.display = 'none';
     addDeliverableButton.style.display = 'none';
+    viewR2EmployeesButton.style.display = 'none';
+    addR2EmployeesButton.style.display = 'none';
 }
 
 /**
@@ -128,6 +137,14 @@ function handleViewDeliverableClick(event){
 
 function handleAddDeliverableClick(event){
     addDeliverableForm();
+}
+
+function handleViewR2EmployeesClick(event){
+    listProjects(window.r2_employees);
+}
+
+function handleAddR2EmployeesClick(event){
+    addR2EmployeesForm();
 }
 
 /**
@@ -173,10 +190,40 @@ function clearChildren() {
     content_div.textContent = '';
 }
 
+function addR2EmployeesForm(){
+    fetch('contents/add_r2_employee.html')
+    .then(data => data.text())
+    .then(html => content_div.innerHTML = html)
+    .then(_ => updateEmployeeID());
+}
+
+function updateEmployeeID(){
+    employee_id = document.getElementById('employee_id');
+    employee_id.value = getUniqueEmployeeID();
+}
+
+function getUniqueEmployeeID(){
+    new Promise(function(resolve, reject){
+        column_values = getColumn_values(window.r2_employee_ids_range);
+        return column_values;
+    }).then(function(column_values){
+        console.log(column_values);
+        do {
+            random_id = Math.floor(Math.random() * 10000);
+            console.log(random_id);
+        }
+        while (column_values.includes(random_id));
+
+        return random_id
+    });
+}
+
+
 function addDeliverableForm(){
     fetch('contents/add_deliverable.html')
     .then(data => data.text())
-    .then(html => content_div.innerHTML = html);
+    .then(html => content_div.innerHTML = html)
+    .then(_ => populateJobNumbers());
 }
 
 function addJobsManagementForm() {
@@ -192,6 +239,8 @@ function addJobsDataForm() {
     .then(html => content_div.innerHTML = html);
 
 }
+
+
 
 /**
 * Print the names and majors of students in a sample spreadsheet:
@@ -213,6 +262,27 @@ function listProjects(my_range) {
     }, function(response) {
       appendMessage('Error: ' + response.result.error.message);
     });
+}
+
+function insertR2EmployeeRow(){
+    employee_id = document.getElementById('employee_id');
+    first_name = document.getElementById('first_name');
+    last_name = document.getElementById('last_name');
+    full_name = document.getElementById('full_name');
+    position = document.getElementById('position');
+    primary_role = document.getElementById('primary_role');
+    exempt = document.getElementById('exempt');
+    if (exempt.checked){
+        exempt_value = 'yes';
+    }
+    else{
+        exempt_value = 'no';
+    }
+    values = [employee_id.value, first_name.value, last_name.value, full_name.value, position.value, primary_role.value,
+    exempt_value];
+    console.log(values);
+
+    insertRow(window.r2_employees, values);
 }
 
 function insertDeliverableRow() {
@@ -259,6 +329,7 @@ function insertJobDataRow() {
     job_notes.value];
 
     insertRow(window.job_data_range, values);
+    getJobNumbers();
 }
 
 function insertJobManagementRow() {
@@ -288,5 +359,65 @@ function insertRow(my_range, values){
     }, function(response) {
       appendMessage('Error: ' + response.result.error.message);
     });
+
+}
+
+function updateFullName(){
+    first_name = document.getElementById('first_name');
+    last_name = document.getElementById('last_name');
+    full_name = document.getElementById('full_name');
+
+    name_array = [first_name.value, last_name.value];
+    full_name.value = name_array.join(' ');
+}
+
+function getJobNumbers() {
+    job_numbers = getColumn_values(window.job_number_range);
+    console.log('got the job numbers');
+    return job_numbers;
+}
+
+function buildArray(response){
+
+    column_array = [];
+    var range = response.result;
+    for (i = 0; i < range.values.length; i++) {
+        row = range.values[i];
+        column_array.push(row[0]);
+    }
+    sessionStorage.setItem('Job_number', JSON.stringify(column_array))
+    return column_array;
+
+}
+
+function getColumn_values(my_range) {
+
+    gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: window.spreadsheet_id,
+        range: my_range,
+    }).then(function(response) {
+
+            column_array = buildArray(response);
+            console.log(column_array);
+            return (column_array);
+
+    }, function(response) {
+        appendMessage('Error: ' + response.result.error.message);
+    });
+
+}
+
+
+function populateJobNumbers(){
+    select_element = document.getElementById('job_no');
+    column_values = JSON.parse(sessionStorage.getItem('Job_number'));
+    for (index in column_values) {
+        var option_data = document.createElement("option");
+        console.log(option_data);
+        value = column_values[index];
+        option_data.value = value;
+        option_data.innerHTML = value;
+        select_element.appendChild(option_data);
+        }
 
 }
